@@ -9,12 +9,12 @@
 
 using namespace std;
 
-// Å×½ºÆ®¿ëÀ¸·Î¸¸ »ç¿ë: ºñ¹Ğ¹øÈ£¸¦ ÄÚµå¿¡ ÀúÀåÇÏÁö ¸¶¼¼¿ä!
-const string server = "tcp://192.168.56.101:4567"; // MySQL ¼­¹ö ÁÖ¼Ò
-const string username = "jeongje";               // »ç¿ëÀÚ ÀÌ¸§
-const string password = "1234";                   // »ç¿ëÀÚ ºñ¹Ğ¹øÈ£
+// ë¹„ë°€ë²ˆí˜¸ë¥¼ ì½”ë“œì— ì €ì¥X
+const string server = ""; // MySQL ì„œë²„ ì£¼ì†Œ
+const string username = "";               // ì‚¬ìš©ì ì´ë¦„
+const string password = "";                   // ì‚¬ìš©ì ë¹„ë°€ë²ˆí˜¸
 
-// ¸Ş´º Ãâ·Â ÇÔ¼ö
+// ë©”ë‰´ ì¶œë ¥ í•¨ìˆ˜
 void showMenu() {
     cout << "1. View Book List" << endl;
     cout << "2. Add New Book" << endl;
@@ -23,7 +23,7 @@ void showMenu() {
     cout << "Choose an option: ";
 }
 
-// µµ¼­ ¸ñ·ÏÀ» Ãâ·ÂÇÏ´Â ÇÔ¼ö
+// ë„ì„œ ëª©ë¡ì„ ì¶œë ¥í•˜ëŠ” í•¨ìˆ˜
 void showBooks(sql::Connection* con) {
     sql::PreparedStatement* pstmt;
     sql::ResultSet* res;
@@ -33,7 +33,7 @@ void showBooks(sql::Connection* con) {
 
     cout << "\nBook List:" << endl;
     while (res->next()) {
-        // °¢ µµ¼­ÀÇ Á¤º¸¸¦ Ãâ·Â
+        // ê° ë„ì„œì˜ ì •ë³´ë¥¼ ì¶œë ¥
         cout << "bookid: " << res->getInt(1)
             << ", bookname: " << res->getString(2)
             << ", publisher: " << res->getString(3)
@@ -44,7 +44,7 @@ void showBooks(sql::Connection* con) {
     delete pstmt;
 }
 
-// »õ µµ¼­¸¦ Ãß°¡ÇÏ´Â ÇÔ¼ö
+// ìƒˆ ë„ì„œë¥¼ ì¶”ê°€í•˜ëŠ” í•¨ìˆ˜
 void addBook(sql::Connection* con) {
     string bookname, publisher;
     int bookid, price;
@@ -54,14 +54,14 @@ void addBook(sql::Connection* con) {
     cin.ignore();
     cin >> bookid;
     cout << "Book Name: ";
-    cin.ignore(); // ÀÔ·Â ¹öÆÛ ºñ¿ì±â
+    cin.ignore(); // ì…ë ¥ ë²„í¼ ë¹„ìš°ê¸°
     getline(cin, bookname);
     cout << "Publisher: ";
     getline(cin, publisher);
     cout << "Price: ";
     cin >> price;
 
-    // PreparedStatement¸¦ »ç¿ëÇÏ¿© »õ µµ¼­¸¦ µ¥ÀÌÅÍº£ÀÌ½º¿¡ Ãß°¡
+    // PreparedStatementë¥¼ ì‚¬ìš©í•˜ì—¬ ìƒˆ ë„ì„œë¥¼ ë°ì´í„°ë² ì´ìŠ¤ì— ì¶”ê°€
     sql::PreparedStatement* pstmt = con->prepareStatement(
         "INSERT INTO Book (bookid, bookname, publisher, price) VALUES (?, ?, ?, ?)"
     );
@@ -77,17 +77,17 @@ void addBook(sql::Connection* con) {
     delete pstmt;
 }
 
-// µµ¼­¸íÀ» °Ë»öÇÏ´Â ÇÔ¼ö
+// ë„ì„œëª…ì„ ê²€ìƒ‰í•˜ëŠ” í•¨ìˆ˜
 void searchBook(sql::Connection* con) {
     string searchTerm;
     cout << "Enter the book name to search: ";
-    cin.ignore(); // ÀÔ·Â ¹öÆÛ ºñ¿ì±â
+    cin.ignore(); // ì…ë ¥ ë²„í¼ ë¹„ìš°ê¸°
     getline(cin, searchTerm);
 
     sql::PreparedStatement* pstmt;
     sql::ResultSet* res;
 
-    // ÀÔ·ÂÇÑ µµ¼­¸íÀ¸·Î °Ë»ö
+    // ì…ë ¥í•œ ë„ì„œëª…ìœ¼ë¡œ ê²€ìƒ‰
     pstmt = con->prepareStatement("SELECT * FROM Book WHERE bookname LIKE ?");
     pstmt->setString(1, "%" + searchTerm + "%");
 
@@ -96,7 +96,7 @@ void searchBook(sql::Connection* con) {
     cout << "\nSearch Results:" << endl;
     bool found = false;
     while (res->next()) {
-        // °Ë»öµÈ µµ¼­ ¸ñ·Ï Ãâ·Â
+        // ê²€ìƒ‰ëœ ë„ì„œ ëª©ë¡ ì¶œë ¥
         cout << "bookid: " << res->getInt(1)
             << ", bookname: " << res->getString(2)
             << ", publisher: " << res->getString(3)
@@ -113,47 +113,47 @@ void searchBook(sql::Connection* con) {
 }
 
 int main() {
-    // ÄÜ¼ÖÀÇ ¹®ÀÚ¼ÂÀ» UTF-8·Î º¯°æ
+    // ì½˜ì†”ì˜ ë¬¸ìì…‹ì„ UTF-8ë¡œ ë³€ê²½
     system("chcp 65001");
 
     sql::Driver* driver;
     sql::Connection* con;
 
     try {
-        // µå¶óÀÌ¹ö ÀÎ½ºÅÏ½º °¡Á®¿À±â
+        // ë“œë¼ì´ë²„ ì¸ìŠ¤í„´ìŠ¤ ê°€ì ¸ì˜¤ê¸°
         driver = get_driver_instance();
 
-        // ¼­¹ö¿¡ ¿¬°á
+        // ì„œë²„ì— ì—°ê²°
         con = driver->connect(server, username, password);
 
-        // µ¥ÀÌÅÍº£ÀÌ½º ¼±ÅÃ
+        // ë°ì´í„°ë² ì´ìŠ¤ ì„ íƒ
         con->setSchema("madang");
 
         int choice;
         do {
-            showMenu(); // ¸Ş´º Ãâ·Â
+            showMenu(); // ë©”ë‰´ ì¶œë ¥
             cin >> choice;
 
             switch (choice) {
             case 1:
-                showBooks(con);  // µµ¼­ ¸ñ·Ï º¸±â
+                showBooks(con);  // ë„ì„œ ëª©ë¡ ë³´ê¸°
                 break;
             case 2:
-                addBook(con);    // »õ µµ¼­ Ãß°¡
+                addBook(con);    // ìƒˆ ë„ì„œ ì¶”ê°€
                 break;
             case 3:
-                searchBook(con); // µµ¼­ °Ë»ö
+                searchBook(con); // ë„ì„œ ê²€ìƒ‰
                 break;
             case 4:
-                cout << "Exiting the program." << endl; // ÇÁ·Î±×·¥ Á¾·á ¸Ş½ÃÁö
+                cout << "Exiting the program." << endl; // í”„ë¡œê·¸ë¨ ì¢…ë£Œ ë©”ì‹œì§€
                 break;
             default:
-                cout << "Invalid input. Please try again." << endl; // Àß¸øµÈ ÀÔ·Â Ã³¸®
+                cout << "Invalid input. Please try again." << endl; // ì˜ëª»ëœ ì…ë ¥ ì²˜ë¦¬
             }
 
-        } while (choice != 4); // Á¾·á Àü±îÁö ¹İº¹
+        } while (choice != 4); // ì¢…ë£Œ ì „ê¹Œì§€ ë°˜ë³µ
 
-        delete con; // ¿¬°á Á¾·á
+        delete con; // ì—°ê²° ì¢…ë£Œ
     }
     catch (sql::SQLException& e) {
         cout << "Could not connect to server. Error message: " << e.what() << endl;
